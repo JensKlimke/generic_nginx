@@ -18,8 +18,8 @@ RUN mkdir -p /usr/share/nginx/cgi-bin
 
 # Copy the scripts and templates
 COPY entrypoint.sh /entrypoint.sh
-COPY webhook.sh /usr/share/nginx/cgi-bin/webhook.sh.template
-COPY update.sh /usr/share/nginx/cgi-bin/update.sh.template
+COPY webhook.sh.template /usr/share/nginx/cgi-bin/webhook.sh.template
+COPY update.sh.template /usr/share/nginx/cgi-bin/update.sh.template
 COPY nginx.conf.template /etc/nginx/conf.d/default.conf.template
 
 # Make scripts executable
