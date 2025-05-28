@@ -4,11 +4,7 @@ FROM nginx:alpine
 RUN apk add --no-cache git curl
 
 # Set environment variables with default values
-ENV REPO_PROTOCOL="https"
-ENV REPO_DOMAIN="github.com"
-ENV REPO=""
-ENV REPO_USERNAME=""
-ENV REPO_PASSWORD=""
+ENV REPO_URL=""
 ENV REPO_BRANCH="main"
 ENV HTML_DIR="/usr/share/nginx/html"
 

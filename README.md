@@ -5,8 +5,7 @@ A customizable Nginx Docker image that serves static content from a Git reposito
 ## Features
 
 - Automatically clones a Git repository at container startup
-- Supports private repositories with username/password authentication
-- Configurable repository protocol and domain
+- Supports private repositories with authentication included in the URL
 - Configurable branch selection
 - Serves static content through Nginx
 - Lightweight Alpine-based image
@@ -16,18 +15,14 @@ A customizable Nginx Docker image that serves static content from a Git reposito
 ### Basic Usage
 
 ```bash
-docker run -p 80:8080 -e REPO=username/repo username/generic-nginx
+docker run -p 80:8080 -e REPO_URL=https://github.com/username/repo.git username/generic-nginx
 ```
 
 ### Environment Variables
 
 | Variable | Description | Required | Default |
 |----------|-------------|----------|---------|
-| `REPO_PROTOCOL` | Protocol to use for Git repository (https or git) | No | `https` |
-| `REPO_DOMAIN` | Domain where the Git repository is hosted | No | `github.com` |
-| `REPO` | Repository in owner/name format | Yes | - |
-| `REPO_USERNAME` | Username for private repositories | No | - |
-| `REPO_PASSWORD` | Password or token for private repositories | No | - |
+| `REPO_URL` | Complete URL of the Git repository to clone (including protocol, domain, and authentication if needed) | Yes | - |
 | `REPO_BRANCH` | Branch of the repository to clone | No | `main` |
 | `HTML_DIR` | Directory where Nginx serves content from | No | `/usr/share/nginx/html` |
 

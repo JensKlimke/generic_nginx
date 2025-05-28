@@ -7,29 +7,16 @@ log() {
 }
 
 # Check if required environment variables are set
-if [ -z "$REPO" ]; then
-  log "ERROR: REPO environment variable is not set"
+if [ -z "$REPO_URL" ]; then
+  log "ERROR: REPO_URL environment variable is not set"
   exit 1
 fi
-
-# Set default values for optional variables
-REPO_PROTOCOL=${REPO_PROTOCOL:-https}
-REPO_DOMAIN=${REPO_DOMAIN:-github.com}
 
 # Clear the HTML directory
 rm -rf "$HTML_DIR"/*
 
-# Construct the repository URL
-if [ -n "$REPO_USERNAME" ] && [ -n "$REPO_PASSWORD" ]; then
-  # Construct URL with authentication
-  REPO_URL="${REPO_PROTOCOL}://${REPO_USERNAME}:${REPO_PASSWORD}@${REPO_DOMAIN}/${REPO}.git"
-else
-  # Construct URL without authentication
-  REPO_URL="${REPO_PROTOCOL}://${REPO_DOMAIN}/${REPO}.git"
-fi
-
 # Clone the repository
-log "Cloning repository from ${REPO_PROTOCOL}://${REPO_DOMAIN}/${REPO} (branch: $REPO_BRANCH)"
+log "Cloning repository from $REPO_URL (branch: $REPO_BRANCH)"
 git clone --branch "$REPO_BRANCH" --single-branch "$REPO_URL" /repo
 
 # Check if the repository was cloned successfully
