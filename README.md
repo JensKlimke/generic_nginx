@@ -86,6 +86,107 @@ cd generic-nginx
 docker build -t generic-nginx .
 ```
 
+## Testing Locally
+
+You can test the functionality of the Docker image locally without deploying it to Docker Hub. There are two ways to do this:
+
+### Automated Testing Script
+
+For convenience, a test script is provided that automates the entire testing process:
+
+```bash
+# Make the script executable if needed
+chmod +x test-locally.sh
+
+# Run the test script
+./test-locally.sh
+```
+
+The script will:
+1. Create a temporary test repository
+2. Build the Docker image
+3. Run a container with the test repository
+4. Test the basic functionality
+5. Test the webhook functionality
+6. Clean up all resources when done
+
+### Manual Testing
+
+If you prefer to test manually, here's how:
+
+### 1. Create a Test Repository
+
+First, create a simple Git repository with the required structure:
+
+```bash
+# Create a test repository
+mkdir -p test-repo/html
+cd test-repo
+
+# Initialize Git repository
+git init
+
+# Create a simple HTML file
+echo "<html><body><h1>Hello, World!</h1><p>This is a test page.</p></body></html>" > html/index.html
+
+# Add and commit the file
+git add .
+git commit -m "Initial commit"
+
+# Note the absolute path to this repository
+TEST_REPO_PATH=$(pwd)
+cd ..
+```
+
+### 2. Build and Run the Docker Image
+
+Build the Docker image and run it with the test repository:
+
+```bash
+# Build the image
+docker build -t generic-nginx-test .
+
+# Run the container with the test repository
+docker run -d --name nginx-test -p 8080:80 \
+  -e REPO_URL=file://$TEST_REPO_PATH \
+  -e WEBHOOK_TOKEN=test-token \
+  generic-nginx-test
+```
+
+### 3. Test Basic Functionality
+
+Open your browser and navigate to http://localhost:8080. You should see the "Hello, World!" page.
+
+### 4. Test Webhook Functionality
+
+Make a change to the test repository and use the webhook to update the content:
+
+```bash
+# Make a change to the HTML file
+cd test-repo
+echo "<html><body><h1>Hello, Updated World!</h1><p>This page has been updated.</p></body></html>" > html/index.html
+git add .
+git commit -m "Update content"
+
+# Trigger the webhook to update the content
+curl -X POST -H "Authorization: Bearer test-token" http://localhost:8080/webhook
+```
+
+Refresh your browser at http://localhost:8080 to see the updated content.
+
+### 5. Clean Up
+
+When you're done testing, clean up the resources:
+
+```bash
+# Stop and remove the container
+docker stop nginx-test
+docker rm nginx-test
+
+# Optionally, remove the test repository
+rm -rf test-repo
+```
+
 ## GitHub Actions Workflow
 
 This repository includes a GitHub Actions workflow with two main jobs:
