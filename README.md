@@ -8,6 +8,7 @@ A customizable Nginx Docker image that serves static content from a Git reposito
 - Supports private repositories with authentication included in the URL
 - Configurable branch selection
 - Serves static content through Nginx
+- Webhook endpoint for triggering content updates without container restart
 - Lightweight Alpine-based image
 
 ## Usage
@@ -25,6 +26,8 @@ docker run -p 80:8080 -e REPO_URL=https://github.com/username/repo.git username/
 | `REPO_URL` | Complete URL of the Git repository to clone (including protocol, domain, and authentication if needed) | Yes | - |
 | `REPO_BRANCH` | Branch of the repository to clone | No | `main` |
 | `HTML_DIR` | Directory where Nginx serves content from | No | `/usr/share/nginx/html` |
+| `WEBHOOK_TOKEN` | Authentication token for the webhook endpoint | No | Random generated token |
+| `WEBHOOK_PATH` | Path for the webhook endpoint | No | `/webhook` |
 
 ### Repository Structure
 
@@ -40,6 +43,32 @@ repository/
 │   └── ...
 └── ...
 ```
+
+### Using the Webhook
+
+The image provides a webhook endpoint that allows you to trigger a content update without restarting the container. This is useful when you want to automatically update the website content when changes are pushed to the repository.
+
+To trigger an update, send a POST request to the webhook endpoint with the authentication token:
+
+```bash
+curl -X POST -H "Authorization: Bearer YOUR_WEBHOOK_TOKEN" http://your-server-address/webhook
+```
+
+Replace `YOUR_WEBHOOK_TOKEN` with the token you specified in the `WEBHOOK_TOKEN` environment variable. If you didn't specify a token, a random one is generated and printed in the container logs at startup.
+
+You can also customize the webhook path using the `WEBHOOK_PATH` environment variable:
+
+```bash
+docker run -p 80:80 -e REPO_URL=https://github.com/username/repo.git -e WEBHOOK_PATH=/custom-webhook -e WEBHOOK_TOKEN=your-secret-token username/generic-nginx
+```
+
+Then use the custom path in your webhook requests:
+
+```bash
+curl -X POST -H "Authorization: Bearer your-secret-token" http://your-server-address/custom-webhook
+```
+
+This is particularly useful for setting up automated deployments with CI/CD systems or Git webhooks.
 
 ## Docker Hub
 

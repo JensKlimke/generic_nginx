@@ -1,0 +1,16 @@
+server {
+    listen 80;
+
+    # Serve static content
+    location / {
+        root ${HTML_DIR};
+        index index.html index.htm;
+    }
+
+    # Webhook endpoint
+    location ${WEBHOOK_PATH} {
+        fastcgi_pass unix:/var/run/fcgiwrap.socket;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /usr/share/nginx/cgi-bin/webhook.sh;
+    }
+}
